@@ -29,12 +29,14 @@ class CrowdInference:
 
         # Run inference
         if self.device.type != 'cpu':
-            self.model(torch.zeros(1, 3, self.imgsz, self.imgsz).to(self.device).type_as(next(self.model.parameters())))  # run once
+            simulated = torch.zeros(1, 3, self.imgsz, self.imgsz)
+            self.model(simulated.to(self.device).type_as(next(self.model.parameters())))  # run once
         
         return self.model
 
     def load_image(self, image_path):
         img0 = cv2.imread(image_path)  # BGR
+        img0 = cv2.resize(img0, (self.imgsz, self.imgsz))
         img = letterbox(img0, self.imgsz, stride=self.stride)[0]
         # Convert
         img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
@@ -64,15 +66,18 @@ class CrowdInference:
     def inference(self, image_path):
         img, img0, tensor = self.load_image(image_path)
         pred = self.model(tensor, augment=False)[0]
-        pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, 
-                                   classes=self.classes, agnostic=self.agnostic_nms)
+        pred = non_max_suppression(pred, 
+                                   self.conf_thres, 
+                                   self.iou_thres, 
+                                   classes=self.classes, 
+                                   agnostic=self.agnostic_nms)
         visualized_image = self.postprocess(pred, img0, tensor)
         return visualized_image
 
 if __name__ == '__main__':
     crowd_inference = CrowdInference()
     crowd_inference.load_model()
-    visualized_image = crowd_inference.inference('data/bus.jpg')
+    visualized_image = crowd_inference.inference('data/The_million_march_man.jpg')
     cv2.imshow('Visualized Image', visualized_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
