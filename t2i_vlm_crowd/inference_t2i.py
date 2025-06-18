@@ -70,6 +70,8 @@ class T2ICountInference:
     @torch.no_grad()
     def inference(self, image_path, prompt):
         batch_size = 16
+        original_image = Image.open(image_path).convert('RGB')
+        original_image = np.array(original_image)
         inputs = self.preprocess_image(image_path).unsqueeze(0)
         prompt_attn_mask = self.preprocess_prompt(prompt).unsqueeze(0)
         prompts = (prompt,)
@@ -87,8 +89,28 @@ class T2ICountInference:
         results = reassemble_patches(torch.cat(outputs, dim=0), num_h, num_w, inputs.size(2), inputs.size(3),
                                         patch_size=self.crop_size, stride=self.crop_size) / 60
         results = results.squeeze(0).squeeze(0).detach().cpu().numpy()
+        # min max scale to 0-1
+        results = (results - results.min()) / (results.max() - results.min())
+        # map density map to original image
+        results = results * 255
+        results = results.astype(np.uint8)
+        # get the mask for > 125
+        
+        results = cv2.resize(results, (original_image.shape[1], original_image.shape[0]), interpolation=cv2.INTER_CUBIC)
+        mask = results > 5
+        # set to jet color map
+        results = cv2.applyColorMap(results, cv2.COLORMAP_JET)
+        # results = cv2.addWeighted(original_image, 0.5, results, 0.5, 0)
+        # if not mask region, set to original image
+        original_image[np.where(mask == True)] = results[np.where(mask == True)]
+
+        from matplotlib import pyplot as plt
+        fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+        ax[0].imshow(original_image)
+        ax[1].imshow(results)
+        plt.show()
         return results
 
 if __name__ == "__main__":
     t2i_inference = T2ICountInference()
-    t2i_inference.inference("D:/city-view/yolo_crowd/data/ex1.jpg", "person")
+    t2i_inference.inference("D:/city-view/yolo_crowd/data/ex3.jpg", "vehicle")
