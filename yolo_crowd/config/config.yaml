@@ -1,0 +1,7 @@
+inference:
+  imgsz: 640
+  conf_thres: 0.35
+  iou_thres: 0.45
+  classes: 0
+  agnostic_nms: True
+  device: '0'

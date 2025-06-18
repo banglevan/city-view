@@ -1,0 +1,26 @@
+# Core dependencies
+torch>=1.7.0
+torchvision>=0.8.0
+opencv-python>=4.5.0
+numpy>=1.19.0
+Pillow>=8.0.0
+
+# YAML configuration
+PyYAML>=5.4.0
+
+# Data processing
+pandas>=1.3.0
+matplotlib>=3.3.0
+seaborn>=0.11.0
+
+# Utilities
+tqdm>=4.60.0
+requests>=2.25.0
+
+# Development and testing
+pytest>=6.0.0
+black>=21.0.0
+flake8>=3.8.0
+
+# Optional: GPU acceleration
+# CUDA toolkit should be installed separately if using GPU
