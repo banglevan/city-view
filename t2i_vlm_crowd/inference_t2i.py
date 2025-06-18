@@ -67,6 +67,7 @@ class T2ICountInference:
         '''
         pass
 
+    @torch.no_grad()
     def inference(self, image_path, prompt):
         batch_size = 16
         inputs = self.preprocess_image(image_path).unsqueeze(0)
@@ -75,19 +76,18 @@ class T2ICountInference:
         gt_prompt_attn_mask = prompt_attn_mask.to(self.device).unsqueeze(2).unsqueeze(3)
         cropped_imgs, num_h, num_w = extract_patches(inputs, patch_size=self.crop_size, stride=self.crop_size)
         outputs = []
-        with torch.set_grad_enabled(False):
-            num_chunks = (cropped_imgs.size(0) + batch_size - 1) // batch_size
-            for i in range(num_chunks):
-                start_idx = i * batch_size
-                end_idx = min((i + 1) * batch_size, cropped_imgs.size(0))
-                outputs_partial = self.model(cropped_imgs[start_idx:end_idx], 
-                                             prompts * (end_idx - start_idx), 
-                                             gt_prompt_attn_mask.repeat((end_idx - start_idx), 1, 1, 1))[0]
-                outputs.append(outputs_partial)
-            results = reassemble_patches(torch.cat(outputs, dim=0), num_h, num_w, inputs.size(2), inputs.size(3),
-                                         patch_size=self.crop_size, stride=self.crop_size) / 60
-            results = results.squeeze(0).squeeze(0).detach().cpu().numpy()
-            return results
+        num_chunks = (cropped_imgs.size(0) + batch_size - 1) // batch_size
+        for i in range(num_chunks):
+            start_idx = i * batch_size
+            end_idx = min((i + 1) * batch_size, cropped_imgs.size(0))
+            outputs_partial = self.model(cropped_imgs[start_idx:end_idx], 
+                                            prompts * (end_idx - start_idx), 
+                                            gt_prompt_attn_mask.repeat((end_idx - start_idx), 1, 1, 1))[0]
+            outputs.append(outputs_partial)
+        results = reassemble_patches(torch.cat(outputs, dim=0), num_h, num_w, inputs.size(2), inputs.size(3),
+                                        patch_size=self.crop_size, stride=self.crop_size) / 60
+        results = results.squeeze(0).squeeze(0).detach().cpu().numpy()
+        return results
 
 if __name__ == "__main__":
     t2i_inference = T2ICountInference()
