@@ -57,7 +57,14 @@ class T2ICountInference:
         return prompt_attn_mask
 
     def postprocess(self, density_map):
-        
+        '''
+        Calculate the number of objects in the image
+        By using the method of count the peak of the density map
+        Args:
+            density_map: numpy array of shape (height, width)
+        Returns:
+            number of objects in the image
+        '''
         pass
 
     def inference(self, image_path, prompt):
@@ -73,14 +80,14 @@ class T2ICountInference:
             for i in range(num_chunks):
                 start_idx = i * batch_size
                 end_idx = min((i + 1) * batch_size, cropped_imgs.size(0))
-                outputs_partial = self.model(cropped_imgs[start_idx:end_idx], prompts * (end_idx - start_idx), gt_prompt_attn_mask.repeat((end_idx - start_idx), 1, 1, 1))[0]
+                outputs_partial = self.model(cropped_imgs[start_idx:end_idx], 
+                                             prompts * (end_idx - start_idx), 
+                                             gt_prompt_attn_mask.repeat((end_idx - start_idx), 1, 1, 1))[0]
                 outputs.append(outputs_partial)
             results = reassemble_patches(torch.cat(outputs, dim=0), num_h, num_w, inputs.size(2), inputs.size(3),
                                          patch_size=self.crop_size, stride=self.crop_size) / 60
             results = results.squeeze(0).squeeze(0).detach().cpu().numpy()
-            from matplotlib import pyplot as plt
-            plt.imshow(results)
-            plt.show()
+            return results
 
 if __name__ == "__main__":
     t2i_inference = T2ICountInference()
