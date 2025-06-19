@@ -1,0 +1,8 @@
+inference:
+  model_path: "weights/sta.pth"  # Path to the model weight.
+  save_path: None  # Path of the text file to save the prediction results.
+  vis_dir: 'visualize'  # Directory to save the visualization results.
+  unit_size: 16  # Unit size for image resizing. Normally set to 16 and no need to change.
+  patch_size: 3584  # Patch size for image division. Decrease this value if OOM occurs.
+  log_para: 1000  # Parameter for log transformation. Normally set to 1000 and no need to change.
+  device: "cuda"  # Device to run the model. Default is cuda.
