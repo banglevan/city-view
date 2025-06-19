@@ -97,12 +97,12 @@ class T2ICountInference:
         # get the mask for > 125
         
         results = cv2.resize(results, (original_image.shape[1], original_image.shape[0]), interpolation=cv2.INTER_CUBIC)
-        mask = results > 5
+        mask = results > 50
         # set to jet color map
         results = cv2.applyColorMap(results, cv2.COLORMAP_JET)
-        # results = cv2.addWeighted(original_image, 0.5, results, 0.5, 0)
+        results = cv2.addWeighted(original_image, 0.5, results, 0.5, 0)
         # if not mask region, set to original image
-        original_image[np.where(mask == True)] = results[np.where(mask == True)]
+        results[np.where(mask == False)] = original_image[np.where(mask == False)]
 
         from matplotlib import pyplot as plt
         fig, ax = plt.subplots(1, 2, figsize=(10, 5))
@@ -113,4 +113,4 @@ class T2ICountInference:
 
 if __name__ == "__main__":
     t2i_inference = T2ICountInference()
-    t2i_inference.inference("D:/city-view/yolo_crowd/data/ex3.jpg", "vehicle")
+    t2i_inference.inference("D:/city-view/yolo_crowd/data/ex4.jpg", "person")

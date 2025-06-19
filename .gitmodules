@@ -1,3 +1,9 @@
 [submodule "T2ICount"]
 	path = T2ICount
 	url = https://github.com/cha15yq/T2ICount.git
+[submodule "guided-diffusion"]
+	path = guided-diffusion
+	url = https://github.com/openai/guided-diffusion.git
+[submodule "mpcount"]
+	path = "MPCount"
+	url = https://github.com/Shimmer93/MPCount.git

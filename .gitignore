@@ -193,3 +193,4 @@ detections/
 .env.production
 config/local.yaml
 config/secrets.yaml 
+crowddiff/*
