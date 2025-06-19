@@ -20,6 +20,38 @@ A comprehensive crowd detection and counting system using both YOLO (You Only Lo
 - **Density Map Generation**: Produces density maps for precise counting
 - **Flexible Object Classes**: Count any object type through text prompts
 
+## 🧮 MPCount (Patch-based Crowd Counting)
+
+MPCount là module đếm đám đông dựa trên chia ảnh thành các patch lớn, phù hợp cho ảnh độ phân giải cao hoặc đám đông dày đặc.
+
+### Cách sử dụng
+
+#### 1. Chạy bằng dòng lệnh
+
+```bash
+python mp_count/inference.py --img_path "path/to/image.jpg" --model_path "weights/sta.pth" --save_path "results.txt" --vis_dir "visualize" --unit_size 16 --patch_size 3584 --log_para 1000 --device "cuda"
+```
+
+#### 2. Sử dụng file cấu hình YAML
+
+Tạo file `mp_count/configs/config.yaml` với nội dung:
+
+```yaml
+img_path: "D:\\city-view\\yolo_crowd\\data\\Crowd_in_street.jpg"  # Đường dẫn ảnh hoặc thư mục ảnh
+model_path: "weights/sta.pth"  # Đường dẫn file trọng số model
+save_path: null                # File lưu kết quả dự đoán (mặc định: không lưu)
+vis_dir: "visualize"           # Thư mục lưu ảnh trực quan hóa kết quả
+unit_size: 16                  # Kích thước đơn vị resize (thường để 16)
+patch_size: 3584               # Kích thước patch (giảm nếu bị OOM)
+log_para: 1000                 # Tham số log transform (thường để 1000)
+device: "cuda"                 # Thiết bị chạy model ("cuda" hoặc "cpu")
+```
+
+Sau đó chạy:
+```bash
+python mp_count/inference.py --config mp_count/configs/config.yaml
+```
+
 ## 📋 Requirements
 
 - Python 3.8+

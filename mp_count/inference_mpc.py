@@ -20,7 +20,7 @@ class MPCountInference:
         self.unit_size = get_inference_config()["unit_size"]
         self.vis_dir = get_inference_config()["vis_dir"]
 
-        os.makedirs(self.vis_dir, exist_ok=True)
+        # os.makedirs(self.vis_dir, exist_ok=True)
 
         self.model = self.load_model()
 
@@ -59,9 +59,7 @@ class MPCountInference:
         ax_dmap = fig.add_subplot(122)
         ax_dmap.imshow(pred_dmap)
         ax_dmap.set_title(f'Predicted count: {pred_count}')
-        plt.savefig(os.path.join(self.vis_dir, img_name.split('.')[0] + '.png'))
         plt.show()
-        plt.close(fig)
     
     @torch.no_grad()
     def inference(self, image_path):
